@@ -1,27 +1,28 @@
 {
-  "name": "pkg-placeholder",
+  "name": "screenshot-compare",
   "type": "module",
   "version": "0.0.0",
   "packageManager": "pnpm@10.6.1",
-  "description": "_description_",
-  "author": "Anthony Fu <anthonyfu117@hotmail.com>",
+  "description": "A tool for pixel-by-pixel comparison of website screenshots for visual regression testing",
+  "author": "Muluk-m",
   "license": "MIT",
-  "funding": "https://github.com/sponsors/antfu",
-  "homepage": "https://github.com/antfu/pkg-placeholder#readme",
+  "homepage": "https://github.com/Muluk-m/screenshot-compare#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/antfu/pkg-placeholder.git"
+    "url": "git+https://github.com/Muluk-m/screenshot-compare.git"
   },
-  "bugs": "https://github.com/antfu/pkg-placeholder/issues",
+  "bugs": "https://github.com/Muluk-m/screenshot-compare/issues",
   "keywords": [],
   "sideEffects": false,
   "exports": {
-    ".": "./dist/index.mjs",
-    "./package.json": "./package.json"
+    ".": "./dist/index.mjs"
   },
   "main": "./dist/index.mjs",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
+  "bin": {
+    "s2c": "./dist/index.js"
+  },
   "files": [
     "dist"
   ],
@@ -36,12 +37,21 @@
     "typecheck": "tsc --noEmit",
     "prepare": "simple-git-hooks"
   },
+  "dependencies": {
+    "chalk": "catalog:",
+    "commander": "catalog:",
+    "pixelmatch": "catalog:",
+    "pngjs": "catalog:",
+    "puppeteer": "catalog:"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
     "@antfu/ni": "catalog:cli",
     "@antfu/utils": "catalog:utils",
     "@types/js-yaml": "catalog:testing",
     "@types/node": "catalog:types",
+    "@types/pixelmatch": "catalog:",
+    "@types/pngjs": "catalog:",
     "bumpp": "catalog:cli",
     "eslint": "catalog:cli",
     "js-yaml": "catalog:testing",
