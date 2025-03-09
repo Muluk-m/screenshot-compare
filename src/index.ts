@@ -88,3 +88,4 @@ export async function screenshotCompare(options: ScreenshotCompareOptions): Prom
 }
 
 export { captureScreenshot, compareScreenshots }
+export * from './compare'
