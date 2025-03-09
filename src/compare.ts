@@ -1,7 +1,11 @@
 import type { RGBTuple } from 'pixelmatch'
+import type { CaptureOptions } from './capture'
 import fs from 'node:fs'
+import path from 'node:path'
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
+import { captureScreenshot } from './capture'
+import { printError, printInfo, printLog, printSuccess } from './print'
 
 /**
  * Comparison options
@@ -52,9 +56,9 @@ export async function compareScreenshots(
   const {
     threshold = 0.1,
     includeAA = false,
-    diffColor,
-    alpha,
-    aaColor,
+    diffColor = [255, 0, 0],
+    alpha = 0,
+    aaColor = [255, 255, 255],
   } = options
 
   const img1 = PNG.sync.read(fs.readFileSync(img1Path))
@@ -105,5 +109,92 @@ export async function compareScreenshots(
     totalPixels,
     passed: diffPercentage <= threshold * 100,
     diffPath: diffOutputPath,
+  }
+}
+
+/**
+ * Compare screenshots of two URLs
+ */
+export async function compareUrl(
+  url1: string,
+  url2: string,
+  options: {
+    threshold?: number
+    outputPrefix?: string
+    viewportWidth?: number
+    viewportHeight?: number
+    waitAfterLoad?: number
+    fullPage?: boolean
+    timeout?: number
+    includeAA?: boolean
+    diffColor?: RGBTuple
+    outputDir?: string
+  },
+) {
+  const timestamp = new Date().getTime()
+  const outputPrefix = options.outputPrefix || timestamp
+  const outputDir = options.outputDir || path.join(process.cwd(), 'output')
+
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true })
+  }
+
+  const img1Path = path.join(outputDir, `${outputPrefix}-site1.png`)
+  const img2Path = path.join(outputDir, `${outputPrefix}-site2.png`)
+  const diffPath = path.join(outputDir, `${outputPrefix}-diff.png`)
+
+  // 提取截图选项
+  const captureOptions: CaptureOptions = {
+    viewportWidth: options.viewportWidth,
+    viewportHeight: options.viewportHeight,
+    waitAfterLoad: options.waitAfterLoad,
+    fullPage: options.fullPage,
+    timeout: options.timeout,
+  }
+
+  // 提取比较选项
+  const compareOptions: CompareOptions = {
+    threshold: options.threshold,
+    includeAA: options.includeAA,
+    diffColor: options.diffColor || [255, 0, 0],
+  }
+
+  try {
+    // Capture screenshots of both websites
+    printInfo(`Capturing first website: ${url1}`)
+    await captureScreenshot(url1, img1Path, captureOptions)
+
+    printInfo(`Capturing second website: ${url2}`)
+    await captureScreenshot(url2, img2Path, captureOptions)
+
+    // Compare screenshots
+    printInfo('Comparing screenshots...')
+    const result = await compareScreenshots(img1Path, img2Path, diffPath, compareOptions)
+
+    // Output comparison results
+    printInfo('\nComparison results:')
+    printLog(`Total pixels: ${result.totalPixels}`)
+    printLog(`Different pixels: ${result.diffPixels}`)
+    printLog(`Difference percentage: ${result.diffPercentage}%`)
+    printLog(`Diff image saved to: ${diffPath}`)
+
+    // Determine test result based on threshold
+    const threshold = options.threshold || 0.1 // Default threshold is 0.1%
+    const thresholdPercentage = threshold * 100
+
+    if (result.passed) {
+      printSuccess(`\n✅ Test passed! Difference percentage ${result.diffPercentage}% is below threshold ${thresholdPercentage}%`)
+      return true
+    }
+    else {
+      printError(`\n❌ Test failed! Difference percentage ${result.diffPercentage}% exceeds threshold ${thresholdPercentage}%`)
+      return false
+    }
+  }
+  catch (error) {
+    if (error instanceof Error) {
+      printError(`Error during comparison: ${error.message}`)
+    }
+    throw error
   }
 }

@@ -149,7 +149,8 @@ Captures a screenshot of a web page.
   - `timeout` - Page load timeout in ms (default: 60000)
   - `waitAfterLoad` - Additional wait time after page load in ms (default: 2000)
   - `fullPage` - Capture full page screenshot (default: true)
-  - `browserOptions` - Puppeteer launch options
+  - `browserOptions` - Playwright launch options
+  - `contextOptions` - Playwright browser context options
 
 ### `screenshotCompare(options)`
 

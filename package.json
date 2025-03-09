@@ -21,12 +21,13 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
   "bin": {
-    "s2c": "./dist/index.js"
+    "s2c": "./dist/cli.mjs"
   },
   "files": [
     "dist"
   ],
   "scripts": {
+    "postinstall": "npx playwright install",
     "build": "unbuild",
     "dev": "unbuild --stub",
     "lint": "eslint",
@@ -41,8 +42,8 @@
     "chalk": "catalog:",
     "commander": "catalog:",
     "pixelmatch": "catalog:",
-    "pngjs": "catalog:",
-    "puppeteer": "catalog:"
+    "playwright": "catalog:",
+    "pngjs": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
