@@ -36,7 +36,8 @@
     "start": "tsx src/index.ts",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "playground": "pnpm -C playground dev"
   },
   "dependencies": {
     "chalk": "catalog:",
