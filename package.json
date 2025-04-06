@@ -1,7 +1,7 @@
 {
   "name": "screenshot-compare",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "packageManager": "pnpm@10.6.1",
   "description": "A tool for pixel-by-pixel comparison of website screenshots for visual regression testing",
   "author": "Muluk-m",
@@ -31,19 +31,23 @@
     "build": "unbuild",
     "dev": "unbuild --stub",
     "lint": "eslint",
+    "fix": "eslint --fix",
     "prepublishOnly": "nr build",
     "release": "bumpp && pnpm publish",
     "start": "tsx src/index.ts",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "playground": "pnpm -C playground dev"
   },
   "dependencies": {
+    "@qlj/screenshot-compare": "catalog:",
     "chalk": "catalog:",
     "commander": "catalog:",
     "pixelmatch": "catalog:",
     "playwright": "catalog:",
-    "pngjs": "catalog:"
+    "pngjs": "catalog:",
+    "prompts": "catalog:"
   },
   "devDependencies": {
     "@antfu/eslint-config": "catalog:cli",
@@ -53,6 +57,7 @@
     "@types/node": "catalog:types",
     "@types/pixelmatch": "catalog:",
     "@types/pngjs": "catalog:",
+    "@types/prompts": "catalog:",
     "bumpp": "catalog:cli",
     "eslint": "catalog:cli",
     "js-yaml": "catalog:testing",
