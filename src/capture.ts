@@ -19,6 +19,8 @@ export interface CaptureOptions {
   browserOptions?: LaunchOptions
   /** 浏览器上下文选项 */
   contextOptions?: BrowserContextOptions
+  /** cookie */
+  cookieString?: string
 }
 
 /**
@@ -40,6 +42,7 @@ export async function captureScreenshot(
     fullPage = true,
     browserOptions = {},
     contextOptions = {},
+    cookieString,
   } = options
 
   const browser = await chromium.launch(browserOptions)
@@ -55,6 +58,19 @@ export async function captureScreenshot(
 
     // 创建新页面
     const page = await context.newPage()
+
+    if (cookieString) {
+      const cookies = cookieString.split(';').map((pair) => {
+        const [name, value] = pair.trim().split('=')
+        return {
+          name,
+          value,
+          domain: new URL(url).hostname,
+          path: '/',
+        }
+      })
+      await context.addCookies(cookies)
+    }
 
     // TODO 使用断言确保加载完成
     await page.goto(url, {
