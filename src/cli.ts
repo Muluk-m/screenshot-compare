@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import chalk from 'chalk'
 import { program } from 'commander'
+import prompts from 'prompts'
+import packageJson from '../package.json'
 import { captureScreenshot } from './capture'
 import { compareUrl } from './compare'
 import { printSuccess } from './print'
@@ -8,13 +10,13 @@ import { printSuccess } from './print'
 program
   .name('screenshot-compare')
   .description('A CLI tool for comparing screenshots of web pages')
-  .version('0.1.0')
+  .version(packageJson.version)
 
 program
   .command('compare')
   .description('Compare screenshots of two web pages')
-  .argument('<url1>', 'First website URL')
-  .argument('<url2>', 'Second website URL')
+  .argument('[url1]', 'First website URL')
+  .argument('[url2]', 'Second website URL')
   .option('-t, --threshold <number>', 'Difference threshold (decimal between 0-1)', Number.parseFloat, 0.1)
   .option('-o, --output-prefix <string>', 'Output filename prefix')
   .option('-w, --viewport-width <number>', 'Viewport width', Number.parseInt, 1280)
@@ -23,8 +25,31 @@ program
   .option('-w, --wait <number>', 'Additional wait time after page load (ms)', Number.parseInt, 2000)
   .option('--timeout <number>', 'Page load timeout (ms)', Number.parseInt, 60000)
   .option('--include-aa <boolean>', 'Whether to include anti-aliased pixels', parseBool, false)
+  .option('--cookie <string>', 'Cookie string to inject (format: name=value;name2=value2)')
   .action(async (url1, url2, options) => {
     try {
+      if (!url1 || !url2) {
+        const questions: prompts.PromptObject[] = [
+          {
+            type: 'text',
+            name: 'secondUrl',
+            message: 'Second website URL:',
+          },
+        ]
+
+        if (!url1) {
+          questions.unshift({
+            type: 'text',
+            name: 'firstUrl',
+            message: 'First website URL:',
+          })
+        }
+
+        const { firstUrl = '', secondUrl } = await prompts(questions)
+        url1 = firstUrl.trim() || url1
+        url2 = secondUrl.trim()
+      }
+
       const result = await compareUrl(url1, url2, options)
       process.exit(result ? 0 : 1)
     }

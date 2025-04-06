@@ -1,6 +1,7 @@
 import type { RGBTuple } from 'pixelmatch'
 import type { CaptureOptions } from './capture'
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
@@ -129,11 +130,12 @@ export async function compareUrl(
     includeAA?: boolean
     diffColor?: RGBTuple
     outputDir?: string
+    cookie?: string
   },
 ) {
   const timestamp = new Date().getTime()
   const outputPrefix = options.outputPrefix || timestamp
-  const outputDir = options.outputDir || path.join(process.cwd(), 'output')
+  const outputDir = options.outputDir || path.join(os.tmpdir(), 'screenshot-compare')
 
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true })
@@ -150,6 +152,7 @@ export async function compareUrl(
     waitAfterLoad: options.waitAfterLoad,
     fullPage: options.fullPage,
     timeout: options.timeout,
+    cookieString: options.cookie,
   }
 
   // 提取比较选项
