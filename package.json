@@ -41,7 +41,6 @@
     "playground": "pnpm -C playground dev"
   },
   "dependencies": {
-    "@qlj/screenshot-compare": "catalog:",
     "chalk": "catalog:",
     "commander": "catalog:",
     "pixelmatch": "catalog:",
